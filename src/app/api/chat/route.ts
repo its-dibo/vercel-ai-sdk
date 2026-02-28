@@ -1,4 +1,4 @@
-import { streamText, UIMessage, convertToModelMessages, tool } from 'ai';
+import { streamText, UIMessage, convertToModelMessages, tool, stepCountIs } from 'ai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { z } from 'zod';
 
@@ -13,6 +13,10 @@ export async function POST(req: Request) {
   const result = streamText({
    model: openrouter("openrouter/free"),
     messages: await convertToModelMessages(messages),
+    stopWhen: stepCountIs(5),
+    onStepFinish: ({ toolResults }) => {
+      console.log(toolResults);
+    },
     tools: {
       weather: tool({
         description: 'Get the weather in a location (celsius)',
